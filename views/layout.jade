@@ -1,7 +1,11 @@
 doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		script(type='text/javascript' src="/javascripts/state.js")
+		script(type='text/javascript' src="/javascripts/machine.js")
+		script(type='text/javascript' src="/javascripts/machineParser.js")
+
+	block content
