@@ -1,0 +1,26 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Automata Made Easy Tests</title>
+  <link rel="stylesheet" media="all" href="node_modules/mocha/mocha.css">
+</head>
+<body>
+  <div id="mocha"><p><a href=".">Index</a></p></div>
+  <div id="messages"></div>
+  <div id="fixtures"></div>
+  <script src="node_modules/mocha/mocha.js"></script>
+  <script src="node_modules/chai/chai.js"></script>
+
+  <script src="public/javascripts/state.js"></script>
+  <script src="public/javascripts/machine.js"></script>
+  <script src="public/javascripts/machineParser.js"></script>
+  
+  <script>mocha.setup('bdd')</script>
+  
+  <script src="test/stateTest.js"></script>
+  <script src="test/machineTest.js"></script>
+  <script src="test/machineParserTest.js"></script>
+
+  <script>mocha.run();</script>
+</body>
+</html>

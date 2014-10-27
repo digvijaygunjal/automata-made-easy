@@ -1,4 +1,4 @@
-function state(name) {
+var State = function (name) {
 	this.name = name;
 	this.transitions = {};
 
