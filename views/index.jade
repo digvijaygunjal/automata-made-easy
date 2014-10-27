@@ -1,9 +1,8 @@
 extends layout
 
-script(src='../public/javascript/state.js')
-script(src="../public/javascript/machine.js")
-script(src="../public/javascript/machineParser.js")
-
 block content
-  h1= title
-  p This is #{title}
+	h1= title
+	textarea#text-box(rows='30', cols='100')  
+	button(type='button', onclick='drawDfa()') Draw Dfa
+	textarea#input-box(rows='4', cols='50')  
+	button(type='button', onclick='checkInput()') Check Input
