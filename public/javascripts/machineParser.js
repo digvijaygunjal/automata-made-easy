@@ -1,4 +1,4 @@
-var machineParser = {};
+var MachineParser = {};
 
 var getKeys = function(json) {
 	return Object.keys(json);
@@ -7,8 +7,7 @@ var getKeys = function(json) {
 var getStateByName = function(states, name) {
 	var state = null;
 	states.forEach(function(s) {
-		if (s.name == name)
-			state = s;
+		if(s.name == name)	state = s;
 	});
 	return state;
 };
@@ -17,7 +16,7 @@ var createStates = function(json) {
 	var stateNames = getKeys(json.transitions);
 
 	var states = stateNames.map(function(StateName) {
-		return new state(StateName);
+		return new State(StateName);
 	});
 
 	states.forEach(function(state) {
@@ -30,12 +29,12 @@ var createStates = function(json) {
 	return states;
 };
 
-machineParser.createMachine = function(json) {
+MachineParser.createMachine = function(json) {
 	var states = createStates(json);
 	var startState = getStateByName(states, json.start);
 	var finalStates = json.final.split(',').map(function(name) {
 		return getStateByName(states, name);
 	});
 
-	return new machine(startState, finalStates, states);
+	return new Machine(startState, finalStates, states);
 };
