@@ -1,8 +1,8 @@
 extends layout
 
 block content
+	script(type='text/javascript' src="/javascripts/designer.js")
 	h1= title
 
-	button(type='button', onclick='createDfa()') Create DFA from JSON
-	textarea#input-box(rows='4', cols='50')  
-	button(type='button', onclick='checkInput()') Check Input
+	button(type='button', onclick='init()') Start Designing
+	button(type='button', onclick='addState()') Add New State

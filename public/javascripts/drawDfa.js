@@ -1,5 +1,4 @@
 var dfaMachine = null;
-var paper = Raphael(100, 200, 500, 500);
 
 var drawDfa = function() {
 	var textJson = document.getElementById('text-box').value;
@@ -33,22 +32,26 @@ var createDfa = function() {
 	var rect = paper.rect(0, 0, 320, 200);
 	rect.attr("stroke", "#000000");
 	var path_start = paper.path("M120,100 H50,85");
-	path_start.attr({stroke:'#000000', 'stroke-width': 2 ,'arrow-end': 'classic-wide-long'});
+	path_start.attr({
+		stroke: '#000000',
+		'stroke-width': 2,
+		'arrow-end': 'classic-wide-long'
+	});
 
 	dfaMachine.states.forEach(function(state) {
 		x += 120;
 		allStates.push(drawCircle(paper, x, y, radius));
-		
-		if(dfaMachine.finalStates.indexOf(state) != -1)
+
+		if (dfaMachine.finalStates.indexOf(state) != -1)
 			drawCircle(paper, x, y, 25);
 		paper.text(x, y, state.name);
 	});
 
-	console.log(allStates);
-
-	var text = "M" + (x-radius) + "," + y + " H" + (x-120+radius) + "," + (x-radius) + "";
+	var text = "M" + (x - radius) + "," + y + " H" + (x - 120 + radius) + "," + (x - radius) + "";
 	var path = paper.path(text);
-	path.attr({stroke:'#000000', 'stroke-width': 2 ,'arrow-end': 'classic-wide-long'});
-
-
+	path.attr({
+		stroke: '#000000',
+		'stroke-width': 2,
+		'arrow-end': 'classic-wide-long'
+	});
 };
