@@ -3,10 +3,8 @@ var paper = Raphael(100, 200, 500, 500);
 
 var drawDfa = function() {
 	var textJson = document.getElementById('text-box').value;
-	if (JSON.parse(textJson)) {
-		var json = JSON.parse(textJson)
-		dfaMachine = MachineParser.createMachine(json);
-	}
+	var json = JSON.parse(textJson)
+	dfaMachine = MachineParser.createMachine(json);
 };
 
 var checkInput = function() {
