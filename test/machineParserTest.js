@@ -7,8 +7,8 @@ describe('#Parser', function() {
 		"inputSet": "0,1",
 		"transitions": {
 			"S": {
-				"0": "A",
-				"1": "S"
+				"0": "S",
+				"1": "A"
 			},
 			"A": {
 				"0": "S",

@@ -2,7 +2,7 @@ extends layout
 
 block content
 	h1= title
-	textarea#text-box(rows='30', cols='100')  
-	button(type='button', onclick='drawDfa()') Create DFA from JSON
+
+	button(type='button', onclick='createDfa()') Create DFA from JSON
 	textarea#input-box(rows='4', cols='50')  
 	button(type='button', onclick='checkInput()') Check Input
