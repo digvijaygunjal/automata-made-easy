@@ -46,5 +46,20 @@ describe('#machine', function() {
 			assert.ok(machine.isInputAccepted('11111'));
 			assert.ok(machine.isInputAccepted('010101'));
 		});
+
+		it('should be false when input is rejected by machine', function() {
+			assert.ok(!machine.isInputAccepted('0'));
+			assert.ok(!machine.isInputAccepted('010'));
+			assert.ok(!machine.isInputAccepted('0000'));
+			assert.ok(!machine.isInputAccepted('01010'));
+		});
 	});
+
+	it('machine should be in dead state when any state on input goes nowhere', function() {
+		delete machine.finalStates[0].transitions['0'];
+		assert.ok(!machine.isInputAccepted('10'));
+		assert.ok(!machine.isInputAccepted('010'));
+		assert.ok(!machine.isInputAccepted('01010101'));
+	});
+
 });
