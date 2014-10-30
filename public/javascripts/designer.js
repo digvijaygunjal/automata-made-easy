@@ -5,21 +5,13 @@ var designer = {};
 designer.states = [];
 designer.transitionLines = [];
 
-
 var stateDragger = function() {
 	// Original coords for main element
 	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
 	this.oy = this.type == "circle" ? this.attr("cy") : this.attr("y");
-	if (this.type != "text") this.animate({
-		"fill-opacity": .2
-	}, 500);
-
 	// Original coords for pair element
 	this.pair.ox = this.pair.type == "circle" ? this.pair.attr("cx") : this.pair.attr("x");
 	this.pair.oy = this.pair.type == "circle" ? this.pair.attr("cy") : this.pair.attr("y");
-	if (this.pair.type != "text") this.pair.animate({
-		"fill-opacity": .2
-	}, 500);
 };
 
 var moveState = function(dx, dy) {
@@ -48,10 +40,25 @@ var moveState = function(dx, dy) {
 		paper.connection(designer.transitionLines[i]);
 	}
 };
+
 var up = function() {};
 
+var stateTemplate = function(circle, text, innerCircle) {
+	this.circle = circle;
+	this.text = text;
+	this.innerCircle = innerCircle;
+};
+
+designer.getStateTemplateByText = function(name) {
+	var existing = false;
+	designer.states.forEach(function(state) {
+		if (name == state.text.attrs['text']) existing = true;
+	});
+	return existing;
+};
+
 designer.drawState = function(x, y, name) {
-	var state = paper.circle(x, y, 50).attr({
+	var circle = paper.circle(x, y, 50).attr({
 		fill: "#ffffff",
 		stroke: "#000000",
 		"fill-opacity": 0,
@@ -59,18 +66,30 @@ designer.drawState = function(x, y, name) {
 		cursor: "move"
 	});
 
-	var state_text = paper.text(x, y, name).attr({
+	var text = paper.text(x, y, name).attr({
 		fill: "#000000",
 		stroke: "none",
 		"font-size": 15,
 		cursor: "move"
 	});
 
-	state.pair = state_text;
-	state_text.pair = state;
+	circle.dblclick(function() {
+		paper.circle(circle.attrs.cx, circle.attrs.cy, 40).attr({
+			fill: "#ffffff",
+			stroke: "#000000",
+			"fill-opacity": 0,
+			"stroke-width": 2,
+			cursor: "move"
+		});
+	});
 
-	state.drag(moveState, stateDragger, up);
-	state_text.drag(moveState, stateDragger, up);
+	circle.pair = text;
+	text.pair = circle;
+
+	circle.drag(moveState, stateDragger, up);
+	text.drag(moveState, stateDragger, up);
+
+	var state = new stateTemplate(circle, text);
 	designer.states.push(state);
 	return state;
 };
@@ -80,17 +99,23 @@ designer.addConnection = function(obj1, obj2, color) {
 	designer.transitionLines.push(connection);
 };
 
+var addState = function() {
+	var name = document.getElementById('state-name').value;
+	if (!designer.getStateTemplateByText(name) && name) {
+		designer.drawState(100, 100, name);
+	}
+};
+
+var addTransitionLine = function() {
+	designer.states.forEach(function(state) {
+		designer.states.forEach(function(state2) {
+			designer.addConnection(state.circle, state2.circle, "#000000");
+		});
+	});
+};
+
 var init = function() {
 	paper.clear();
 	var rect = paper.rect(0, 0, "100%", "100%");
 	rect.attr("stroke", "#000000");
-
-	var s = designer.drawState(100, 100, "start");
-	var f = designer.drawState(500, 200, "Final");
-
-	designer.addConnection(s, f, '#000');
-};
-
-var addState = function() {
-	designer.drawState(100, 100, "start");
 };

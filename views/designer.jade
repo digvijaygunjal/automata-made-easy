@@ -1,8 +1,17 @@
-extends layout
-
-block content
-	script(type='text/javascript' src="/javascripts/designer.js")
-	h1= title
-
-	button(type='button', onclick='init()') Start Designing
-	button(type='button', onclick='addState()') Add New State
+doctype html
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body(onload='init()')
+		script(type='text/javascript' src="/javascripts/state.js")
+		script(type='text/javascript' src="/javascripts/machine.js")
+		script(type='text/javascript' src="/javascripts/machineParser.js")
+		script(type='text/javascript' src="/javascripts/Raphael.js")
+		script(type='text/javascript' src="/javascripts/connection.js")
+		script(type='text/javascript' src="/javascripts/drawDfa.js")
+		script(type='text/javascript' src="/javascripts/designer.js")
+		h1= title
+		input#state-name(type='text')
+		button(type='button', onclick='addState()') Add New State
+		p Double Click for making a state final.

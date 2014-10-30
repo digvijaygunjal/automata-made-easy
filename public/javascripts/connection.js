@@ -76,7 +76,9 @@ Raphael.fn.connection = function(obj1, obj2, line, bg) {
             }),
             line: this.path(path).attr({
                 stroke: color,
-                fill: "none"
+                fill: "none",
+                'stroke-width': 2,
+                'arrow-end': 'classic-wide-long'
             }),
             from: obj1,
             to: obj2
