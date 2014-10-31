@@ -1,17 +1,16 @@
-var paper = Raphael(100, 200, "80%", "70%");
-
 var designer = {};
 
 designer.states = [];
 designer.transitionLines = [];
 designer.inputSet = ['0', '1'];
 designer.circleAttrs = {
-		fill: "#ffffff",
-		stroke: "#000000",
-		"fill-opacity": 0,
-		"stroke-width": 2,
-		cursor: "move"
-	};
+	fill: "#ffffff",
+	stroke: "#000000",
+	"fill-opacity": 0,
+	"stroke-width": 2,
+	cursor: "move"
+};
+
 designer.textAttrs = {
 	fill: "#000000",
 	stroke: "none",
@@ -19,12 +18,10 @@ designer.textAttrs = {
 	cursor: "move"
 };
 
-
-designer.getStateByBubble = function(bubble){
+designer.getStateByBubble = function(bubble) {
 	var bubbleState;
-	designer.states.forEach(function(state){
-		if(state.circle.pairs.indexOf(bubble) != -1){
-			console.log("state mil gaya bhai");
+	designer.states.forEach(function(state) {
+		if (state.circle.pairs.indexOf(bubble) != -1) {
 			bubbleState = state;
 		}
 	});
@@ -36,18 +33,18 @@ var stateDragger = function() {
 	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
 	this.oy = this.type == "circle" ? this.attr("cy") : this.attr("y");
 	// Original coords for pair element
-	this.pairs.forEach(function(pair){
+	this.pairs.forEach(function(pair) {
 		pair.ox = pair.type == "circle" ? pair.attr("cx") : pair.attr("x");
 		pair.oy = pair.type == "circle" ? pair.attr("cy") : pair.attr("y");
 	});
 };
 
-var bubbleDragger = function(){
+var bubbleDragger = function() {
 	// Original coords for main element
 	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
 	this.oy = this.type == "circle" ? this.attr("cy") : this.attr("y");
 	// Original coords for pair element
-	this.pairs.forEach(function(pair){
+	this.pairs.forEach(function(pair) {
 		pair.ox = pair.type == "circle" ? pair.attr("cx") : pair.attr("x");
 		pair.oy = pair.type == "circle" ? pair.attr("cy") : pair.attr("y");
 	});
@@ -65,7 +62,7 @@ var moveState = function(dx, dy) {
 	this.attr(att);
 
 	// Move paired element
-	this.pairs.forEach(function(pair){
+	this.pairs.forEach(function(pair) {
 		att = pair.type == "circle" ? {
 			cx: pair.ox + dx,
 			cy: pair.oy + dy
@@ -75,7 +72,7 @@ var moveState = function(dx, dy) {
 		};
 		pair.attr(att);
 	});
-	
+
 
 	// Move Transition lines
 	for (i = designer.transitionLines.length; i--;) {
@@ -83,7 +80,7 @@ var moveState = function(dx, dy) {
 	}
 };
 
-var moveBubble = function(dx, dy){
+var moveBubble = function(dx, dy) {
 	// Move main element
 	var bubble = this;
 	var att = bubble.type == "circle" ? {
@@ -96,30 +93,58 @@ var moveBubble = function(dx, dy){
 	bubble.attr(att);
 
 	// Move paired element
-	bubble.pairs.forEach(function(pair){
-		att = pair.type == "circle" ? {
-			cx: pair.ox + dx,
-			cy: pair.oy + dy
-		} : {
-			x: pair.ox + dx,
-			y: pair.oy + dy
-		};
-		pair.attr(att);
-	});
+	var pair = bubble.pairs[0];
+	att = pair.type == "circle" ? {
+		cx: pair.ox + dx,
+		cy: pair.oy + dy
+	} : {
+		x: pair.ox + dx,
+		y: pair.oy + dy
+	};
+	pair.attr(att);
 
 	// draw transition Line
+	var bubbleState = designer.getStateByBubble(bubble);
 	designer.states.forEach(function(state) {
-		if(state.circle.isPointInside(bubble.ox, bubble.oy)) {
-			
-			designer.transitionLines.push(paper.connection(designer.getStateByBubble(bubble).circle, state.circle, "#000000"));
+		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
+			designer.transitionLines.push(paper.connection(bubbleState.circle, state.circle, "#000000"));
+			bubble.pairs.forEach(function(pair) {
+				pair.hide();
+			});
+			bubble.hide();
 		}
 	});
 };
 
 var up = function() {};
 
-var bubbleDragEnd = function(){};
+// var dragBubbleToState = function(bubble, bubbleState) {
+// 	if (bubble.type == "circle") {
+// 		bubble.cx = bubbleState.circle.ox + 60;
+// 		bubble.cy = bubbleState.circle.oy;
+// 	}
+// 	var animateBubbleAttrs = {
+// 		cx: bubble.cx,
+// 		cy: bubble.cy,
+// 	};
+// 	var animateBubbleTextAttrs = {
+// 		x: bubble.pairs[0].cx,
+// 		y: bubble.pairs[0].cy,
+// 	};
+// 	var animateBubble = bubble.type == "circle" ? animateBubbleAttrs : animateBubbleTextAttrs;
+// 	bubble.animate(animateBubble, 3000, "bounce");
+// };
 
+var bubbleDragEnd = function() {
+
+};
+
+var bubbleDragOver = function(state) {
+	// if(state.type == 'circle'){
+	// 	// console.log("Mill gaya Bhai");
+	// 	// this.hide();
+	// };
+};
 
 var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	var self = this;
@@ -130,7 +155,7 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	self.isFinal = false;
 
 	var drawInnerCircle = function() {
-		if(self.isFinal)
+		if (self.isFinal)
 			self.innerCircle.hide();
 		else
 			self.innerCircle.show();
@@ -140,6 +165,15 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	self.circle.dblclick(drawInnerCircle);
 	self.text.dblclick(drawInnerCircle);
 	self.innerCircle.dblclick(drawInnerCircle);
+	var distance_between_two_points = function(x1, y1, x2, y2) {
+		var dx = x1 - x2;
+		var dy = y1 - y2;
+		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+	};
+	self.isPointInside = function(x, y) {
+		var circle = this.circle;
+		return distance_between_two_points(x, y, circle.ox, circle.oy) <= 40;
+	};
 };
 
 designer.getStateTemplateByText = function(name) {
@@ -150,18 +184,20 @@ designer.getStateTemplateByText = function(name) {
 	return existing;
 };
 
-designer.drawInputBubbles = function(circle, text, innerCircle, x, y){
-	return designer.inputSet.map(function(inputText){
+designer.drawInputBubbles = function(circle, text, innerCircle, x, y) {
+	return designer.inputSet.map(function(inputText) {
 		var bX = x + 45;
 		var bY = y + 45;
 
-		var inputBubble  = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
+		var inputBubble = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, inputText).attr(designer.textAttrs);
 
 		inputBubble.pairs = [inputBubbleText];
 		inputBubbleText.pairs = [inputBubble];
 
 		inputBubble.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+		inputBubble.onDragOver(bubbleDragOver);
+
 		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
 
 		circle.pairs.push(inputBubble);
@@ -202,25 +238,4 @@ designer.drawState = function(x, y, name) {
 designer.addConnection = function(obj1, obj2, color) {
 	var connection = paper.connection(obj1, obj2, color);
 	designer.transitionLines.push(connection);
-};
-
-var addState = function() {
-	var name = document.getElementById('state-name').value;
-	if (!designer.getStateTemplateByText(name) && name) {
-		designer.drawState(100, 100, name);
-	}
-};
-
-var addTransitionLines = function() {
-	designer.states.forEach(function(state) {
-		designer.states.forEach(function(state2) {
-			designer.addConnection(state.circle, state2.circle, "#000000");
-		});
-	});
-};
-
-var init = function() {
-	paper.clear();
-	var rect = paper.rect(0, 0, "100%", "100%");
-	rect.attr("stroke", "#000000");
 };
