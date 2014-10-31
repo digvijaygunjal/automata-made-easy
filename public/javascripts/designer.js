@@ -102,18 +102,6 @@ var moveBubble = function(dx, dy) {
 		y: pair.oy + dy
 	};
 	pair.attr(att);
-
-	// draw transition Line
-	var bubbleState = designer.getStateByBubble(bubble);
-	designer.states.forEach(function(state) {
-		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
-			designer.transitionLines.push(paper.connection(bubbleState.circle, state.circle, "#000000"));
-			bubble.pairs.forEach(function(pair) {
-				pair.hide();
-			});
-			bubble.hide();
-		}
-	});
 };
 
 var up = function() {};
@@ -136,14 +124,31 @@ var up = function() {};
 // };
 
 var bubbleDragEnd = function() {
-
+	var bubble = this;
+	var bubbleState = designer.getStateByBubble(bubble);
+	designer.states.forEach(function(state) {
+		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
+			bubble.pairs.forEach(function(pair) {
+				pair.hide();
+			});
+			bubble.hide();
+			designer.transitionLines.push(paper.connection(bubbleState.circle, state.circle, "#000000"));
+		}
+	});
 };
 
-var bubbleDragOver = function(state) {
-	// if(state.type == 'circle'){
-	// 	// console.log("Mill gaya Bhai");
-	// 	// this.hide();
-	// };
+var bubbleTextDragEnd = function(){
+	var bubble = this.pairs[0];
+	var bubbleState = designer.getStateByBubble(bubble);
+	designer.states.forEach(function(state) {
+		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
+			bubble.pairs.forEach(function(pair) {
+				pair.hide();
+			});
+			bubble.hide();
+			designer.transitionLines.push(paper.connection(bubbleState.circle, state.circle, "#000000"));
+		}
+	});
 };
 
 var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
@@ -165,14 +170,9 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	self.circle.dblclick(drawInnerCircle);
 	self.text.dblclick(drawInnerCircle);
 	self.innerCircle.dblclick(drawInnerCircle);
-	var distance_between_two_points = function(x1, y1, x2, y2) {
-		var dx = x1 - x2;
-		var dy = y1 - y2;
-		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-	};
+
 	self.isPointInside = function(x, y) {
-		var circle = this.circle;
-		return distance_between_two_points(x, y, circle.ox, circle.oy) <= 40;
+		return this.circle.isPointInside(x, y) || this.innerCircle.isPointInside(x, y) || this.text.isPointInside(x, y);
 	};
 };
 
@@ -196,9 +196,8 @@ designer.drawInputBubbles = function(circle, text, innerCircle, x, y) {
 		inputBubbleText.pairs = [inputBubble];
 
 		inputBubble.drag(moveBubble, bubbleDragger, bubbleDragEnd);
-		inputBubble.onDragOver(bubbleDragOver);
 
-		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleTextDragEnd);
 
 		circle.pairs.push(inputBubble);
 		circle.pairs.push(inputBubbleText);
