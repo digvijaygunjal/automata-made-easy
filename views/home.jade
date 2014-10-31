@@ -1,0 +1,32 @@
+extends layout
+
+   
+block content
+
+  #header
+    h1 Automata-Made-Easy
+    
+  #nav
+    #events
+      span EVENTS
+      .input-group
+        input.form-control(type="text")
+        span.input-group-btn
+          button.btn.btn-default.event(type="button")
+            span.glyphicon.glyphicon-plus
+    #states
+      span STATES
+      .input-group
+        input.form-control(type="text")
+        span.input-group-btn
+          button.btn.btn-default.state(type="button")
+            span.glyphicon.glyphicon-plus
+  #section
+   #input-div.input-group
+       input#input.form-control(type='text', placeholder='Give your Input String')
+       span.input-group-btn
+         button#input-btn.btn.btn-default(type='button')
+           span.glyphicon.glyphicon-play.play
+     .canvas
+       span DRAW DFA HERE
+ 
