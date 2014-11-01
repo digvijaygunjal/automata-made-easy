@@ -3,6 +3,8 @@ var designer = {};
 designer.states = [];
 designer.transitionLines = [];
 designer.inputSet = ['0', '1'];
+designer.startState = "A";
+
 designer.circleAttrs = {
 	fill: "#ffffff",
 	stroke: "#000000",
@@ -16,16 +18,6 @@ designer.textAttrs = {
 	stroke: "none",
 	"font-size": 15,
 	cursor: "move"
-};
-
-designer.getStateByBubble = function(bubble) {
-	var bubbleState;
-	designer.states.forEach(function(state) {
-		if (state.circle.pairs.indexOf(bubble) != -1) {
-			bubbleState = state;
-		}
-	});
-	return bubbleState;
 };
 
 var stateDragger = function() {
@@ -106,49 +98,44 @@ var moveBubble = function(dx, dy) {
 
 var up = function() {};
 
-// var dragBubbleToState = function(bubble, bubbleState) {
-// 	if (bubble.type == "circle") {
-// 		bubble.cx = bubbleState.circle.ox + 60;
-// 		bubble.cy = bubbleState.circle.oy;
-// 	}
-// 	var animateBubbleAttrs = {
-// 		cx: bubble.cx,
-// 		cy: bubble.cy,
-// 	};
-// 	var animateBubbleTextAttrs = {
-// 		x: bubble.pairs[0].cx,
-// 		y: bubble.pairs[0].cy,
-// 	};
-// 	var animateBubble = bubble.type == "circle" ? animateBubbleAttrs : animateBubbleTextAttrs;
-// 	bubble.animate(animateBubble, 3000, "bounce");
-// };
+var dragBubbleToState = function(bubble, bubbleState) {
+	bubble = bubble.type == "circle" ? bubble : bubble.pairs[0];
+	bubbleText = bubble.pairs[0];
 
-var bubbleDragEnd = function() {
-	var bubble = this;
-	var bubbleState = designer.getStateByBubble(bubble);
-	designer.states.forEach(function(state) {
-		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
-			bubble.pairs.forEach(function(pair) {
-				pair.hide();
-			});
-			bubble.hide();
-			designer.transitionLines.push(paper.connection(bubbleState.circle, state.circle, "#000000"));
-		}
-	});
+	bubble.cx = bubbleState.circle.attrs.cx + 60;
+	bubble.cy = bubbleState.circle.attrs.cy;
+	bubbleText.x = bubbleState.circle.attrs.cx + 60;
+	bubbleText.y = bubbleState.circle.attrs.cy;
+
+	var animateBubbleAttrs = {
+		cx: bubble.cx,
+		cy: bubble.cy
+	};
+	var animateBubbleTextAttrs = {
+		x: bubbleText.x,
+		y: bubbleText.y
+	};
+	
+	bubble.animate(animateBubbleAttrs, 3000, "elastic");
+	bubbleText.animate(animateBubbleTextAttrs, 3000, "elastic");
 };
 
-var bubbleTextDragEnd = function(){
-	var bubble = this.pairs[0];
-	var bubbleState = designer.getStateByBubble(bubble);
+var bubbleDragEnd = function() {
+	var bubble = this.type == 'circle' ? this : this.pairs[0];
+	var bubbleState = designer.getStateTemplateByPair(bubble);
+	var inputText = bubble.pairs[0].attrs.text;
+	var stateFound = false;
 	designer.states.forEach(function(state) {
 		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
 			bubble.pairs.forEach(function(pair) {
 				pair.hide();
 			});
 			bubble.hide();
-			designer.transitionLines.push(paper.connection(bubbleState.circle, state.circle, "#000000"));
+			designer.addConnection(bubbleState.circle, state.circle, inputText, "#000000");
+			stateFound = true;
 		}
 	});
+	if (!stateFound) dragBubbleToState(bubble, bubbleState);
 };
 
 var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
@@ -159,7 +146,7 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	self.inputBubbles = inputBubbles;
 	self.isFinal = false;
 
-	var drawInnerCircle = function() {
+	var toggleInnerCircle = function() {
 		if (self.isFinal)
 			self.innerCircle.hide();
 		else
@@ -167,13 +154,27 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 		self.isFinal = !self.isFinal;
 	};
 
-	self.circle.dblclick(drawInnerCircle);
-	self.text.dblclick(drawInnerCircle);
-	self.innerCircle.dblclick(drawInnerCircle);
+	self.circle.dblclick(toggleInnerCircle);
+	self.text.dblclick(toggleInnerCircle);
+	self.innerCircle.dblclick(toggleInnerCircle);
 
 	self.isPointInside = function(x, y) {
 		return this.circle.isPointInside(x, y) || this.innerCircle.isPointInside(x, y) || this.text.isPointInside(x, y);
 	};
+
+	self.name = function() {
+		return self.text.attrs.text;
+	};
+};
+
+designer.getStateTemplateByPair = function(pair) {
+	var pairState;
+	designer.states.forEach(function(state) {
+		if ((state.circle == pair) || (state.circle.pairs.indexOf(pair) != -1)) {
+			pairState = state;
+		}
+	});
+	return pairState;
 };
 
 designer.getStateTemplateByText = function(name) {
@@ -196,8 +197,7 @@ designer.drawInputBubbles = function(circle, text, innerCircle, x, y) {
 		inputBubbleText.pairs = [inputBubble];
 
 		inputBubble.drag(moveBubble, bubbleDragger, bubbleDragEnd);
-
-		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleTextDragEnd);
+		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
 
 		circle.pairs.push(inputBubble);
 		circle.pairs.push(inputBubbleText);
@@ -234,7 +234,32 @@ designer.drawState = function(x, y, name) {
 	return state;
 };
 
-designer.addConnection = function(obj1, obj2, color) {
-	var connection = paper.connection(obj1, obj2, color);
+designer.addConnection = function(obj1, obj2, input, color) {
+	var connection = paper.connection(obj1, obj2, input, color);
 	designer.transitionLines.push(connection);
+};
+
+designer.createJson = function() {
+	var json = {};
+	var allFinals = designer.states.filter(function(state) {
+		return state.isFinal;
+	});
+	var transitions = {};
+
+	json['start'] = designer.startState;
+	json['inputSet'] = designer.inputSet.join(',');
+	json['final'] = allFinals.map(function(state) {
+		return state.name();
+	}).join(",");
+
+	designer.transitionLines.forEach(function(transitionLine) {
+		var from = designer.getStateTemplateByPair(transitionLine.from).name();
+		var to = designer.getStateTemplateByPair(transitionLine.to).name();
+		var input = transitionLine.input;
+		transitions[from] || (transitions[from] = {});
+		transitions[from][input] = to;
+	});
+
+	json['transitions'] = transitions;
+	return json;
 };

@@ -1,4 +1,4 @@
-Raphael.fn.connection = function(obj1, obj2, line, bg) {
+Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
     if (obj1.line && obj1.from && obj1.to) {
         line = obj1;
         obj1 = line.from;
@@ -81,7 +81,8 @@ Raphael.fn.connection = function(obj1, obj2, line, bg) {
                 'arrow-end': 'classic-wide-long'
             }),
             from: obj1,
-            to: obj2
+            to: obj2,
+            input: input
         };
     }
 };

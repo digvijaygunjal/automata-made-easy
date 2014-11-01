@@ -15,6 +15,12 @@ var checkInput = function() {
 	console.log(dfaMachine.isInputAccepted(input.trim()));
 };
 
+var createAndCheckInput = function() {
+	var json = designer.createJson();
+	dfaMachine = MachineParser.createMachine(json);
+	checkInput();
+};
+
 var drawCircle = function(paper, x, y, radius) {
 	var circle = paper.circle(x, y, radius);
 	circle.attr("fill", "#ffffff");
