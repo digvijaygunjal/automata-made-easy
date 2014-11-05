@@ -219,6 +219,7 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 
 	self.removeInputBubble = function(text) {
 		var inputBubble = self.getInputBubbleByText(text);
+		self.inputBubbles.pop(inputBubble);
 		self.removePair(inputBubble.circle);
 		self.removePair(inputBubble.text);
 		inputBubble.remove();
