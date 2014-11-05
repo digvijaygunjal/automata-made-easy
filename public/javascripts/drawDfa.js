@@ -6,19 +6,20 @@ var drawDfa = function() {
 	dfaMachine = MachineParser.createMachine(json);
 };
 
-var checkInput = function() {
+var checkInput = function(text) {
 	if (dfaMachine == null) {
 		alert('DFA not created.\nPlease create a valid DFA');
 		return;
 	}
-	var input = document.getElementById('input-box').value;
-	console.log(dfaMachine.isInputAccepted(input.trim()));
+	var input = text || document.getElementById('input').value;
+	var isInputAccepted = dfaMachine.isInputAccepted(input.trim());
+	return isInputAccepted;
 };
 
-var createAndCheckInput = function() {
+var createAndCheckInput = function(text) {
 	var json = designer.createJson();
 	dfaMachine = MachineParser.createMachine(json);
-	checkInput();
+	return checkInput(text);
 };
 
 var drawCircle = function(paper, x, y, radius) {

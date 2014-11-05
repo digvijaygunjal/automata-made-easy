@@ -3,6 +3,7 @@ extends layout
    
 block content
 
+  body(onload='init()')
   #header
     h1 Automata-Made-Easy
     
@@ -23,10 +24,10 @@ block content
             span.glyphicon.glyphicon-plus
   #section
    #input-div.input-group
-       input#input.form-control(type='text', placeholder='Give your Input String')
+       input#input.form-control(type='text', placeholder='Input String')
        span.input-group-btn
          button#input-btn.btn.btn-default(type='button')
            span.glyphicon.glyphicon-play.play
      .canvas
-       span DRAW DFA HERE
+       
  

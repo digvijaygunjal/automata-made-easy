@@ -12,10 +12,10 @@ var Machine = function(startState, finalStates, all) {
 
 	self.isInputAccepted = function(text) {
 		text.split('').forEach(function(input) {
-			if(!self.acceptInput(input)) return false;
 			self.acceptInput(input);
 		});
-		var result = finalStates.indexOf(self.current) != -1;
+		
+		var result = (finalStates.indexOf(self.current) != -1);
 		self.current = self.startState;
 		return result;
 	};

@@ -1,7 +1,7 @@
-var paper = Raphael(100, 200, "80%", "70%");
+var paper = Raphael(450, 300, "62%", "59%");
 
-var addState = function() {
-	var name = document.getElementById('state-name').value;
+var addState = function(text) {
+	var name = text || document.getElementById('state-name').value;
 	if (!designer.getStateTemplateByText(name) && name) {
 		designer.drawState(100, 100, name);
 	}

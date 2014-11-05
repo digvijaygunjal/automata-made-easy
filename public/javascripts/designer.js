@@ -1,8 +1,8 @@
 var designer = {};
 
 designer.states = [];
-designer.transitionLines = [];
-designer.inputSet = ['0', '1'];
+designer.transitions = [];
+designer.inputSet = [];
 designer.startState = "A";
 
 designer.circleAttrs = {
@@ -67,8 +67,8 @@ var moveState = function(dx, dy) {
 
 
 	// Move Transition lines
-	for (i = designer.transitionLines.length; i--;) {
-		paper.connection(designer.transitionLines[i]);
+	for (i = designer.transitions.length; i--;) {
+		paper.connection(designer.transitions[i]);
 	}
 };
 
@@ -115,7 +115,7 @@ var dragBubbleToState = function(bubble, bubbleState) {
 		x: bubbleText.x,
 		y: bubbleText.y
 	};
-	
+
 	bubble.animate(animateBubbleAttrs, 3000, "elastic");
 	bubbleText.animate(animateBubbleTextAttrs, 3000, "elastic");
 };
@@ -131,11 +131,32 @@ var bubbleDragEnd = function() {
 				pair.hide();
 			});
 			bubble.hide();
-			designer.addConnection(bubbleState.circle, state.circle, inputText, "#000000");
+			designer.addConnection(bubbleState.circle, state.circle, bubble, "#000000");
 			stateFound = true;
 		}
 	});
 	if (!stateFound) dragBubbleToState(bubble, bubbleState);
+};
+
+var inputBubble = function(circle, text) {
+	var self = this;
+	self.circle = circle;
+	self.circle.pairs = [text];
+	self.text = text;
+	self.text.pairs = [circle];
+
+	self.inputText = function() {
+		return self.text.attrs.text;
+	};
+
+	self.remove = function(){
+		self.circle.hide();
+		self.circle.remove();
+		self.text.hide();
+		self.text.remove();
+	};
+
+	return self;
 };
 
 var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
@@ -165,6 +186,88 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	self.name = function() {
 		return self.text.attrs.text;
 	};
+
+	self.remove = function() {
+		designer.removeConnectionsForState(self);
+		self.circle.pairs.forEach(function(pair) {
+			pair.remove();
+		});
+		self.circle.remove();
+	};
+
+	self.addPair = function(pair) {
+		self.circle.pairs.push(pair);
+		self.text.pairs.push(pair);
+		self.innerCircle.pairs.push(pair);
+	};
+
+	self.removePair = function(pair) {
+		self.circle.pairs.pop(pair);
+		self.text.pairs.pop(pair);
+		self.innerCircle.pairs.pop(pair);
+	};
+
+	self.getInputBubbleByText = function(text){
+		var bubble = null;
+		self.inputBubbles.forEach(function(inputBubble){
+			if(inputBubble.inputText() == text){
+				bubble = inputBubble;
+			}
+		});
+		return bubble;
+	};
+
+	self.removeInputBubble = function(text) {
+		var inputBubble = self.getInputBubbleByText(text);
+		self.removePair(inputBubble.circle);
+		self.removePair(inputBubble.text);
+		inputBubble.remove();
+	};
+};
+
+designer.addInput = function(text) {
+	designer.inputSet.push(text);
+	designer.states.forEach(function(state) {
+		var x = state.circle.cx;
+		var y = state.circle.cy;
+		var bX = x + 45;
+		var bY = y + 45;
+
+		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
+		var inputBubbleText = paper.text(bX, bY, text).attr(designer.textAttrs);
+
+		bubbleCircle.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+
+		state.addPair(bubbleCircle);
+		state.addPair(inputBubbleText);
+		state.inputBubbles.push(new inputBubble(bubbleCircle, inputBubbleText));
+	});
+};
+
+designer.removeInput = function(inputText) {
+	designer.inputSet.pop(inputText);
+	designer.states.forEach(function(state){
+		state.removeInputBubble(inputText);
+	});
+};
+
+designer.removeConnectionsForState = function(state) {
+	var connectionsToDelete = [];
+	designer.transitions.forEach(function(connection) {
+		if (connection.from == state.circle || connection.to == state.circle)
+			connectionsToDelete.push(connection);
+	});
+
+	connectionsToDelete.forEach(function(connection) {
+		connection.line.hide();
+		connection.line.remove();
+		var stateTemplate = designer.getStateTemplateByPair(connection.input);
+		dragBubbleToState(connection.input, stateTemplate);
+		connection.input.show();
+		connection.input.pairs[0].show();
+		designer.transitions.pop(connection);
+	});
 };
 
 designer.getStateTemplateByPair = function(pair) {
@@ -178,41 +281,37 @@ designer.getStateTemplateByPair = function(pair) {
 };
 
 designer.getStateTemplateByText = function(name) {
-	var existing = false;
+	var stateTemplate = false;
 	designer.states.forEach(function(state) {
-		if (name == state.text.attrs['text']) existing = true;
+		if (name == state.text.attrs['text']) stateTemplate = state;
 	});
-	return existing;
+	return stateTemplate;
 };
 
-designer.drawInputBubbles = function(circle, text, innerCircle, x, y) {
+designer.drawInputBubbles = function(state, x, y) {
 	return designer.inputSet.map(function(inputText) {
 		var bX = x + 45;
 		var bY = y + 45;
 
-		var inputBubble = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
+		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, inputText).attr(designer.textAttrs);
 
-		inputBubble.pairs = [inputBubbleText];
-		inputBubbleText.pairs = [inputBubble];
-
-		inputBubble.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+		bubbleCircle.drag(moveBubble, bubbleDragger, bubbleDragEnd);
 		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
 
-		circle.pairs.push(inputBubble);
-		circle.pairs.push(inputBubbleText);
-		text.pairs.push(inputBubble);
-		text.pairs.push(inputBubbleText);
-		innerCircle.pairs.push(inputBubble);
-		innerCircle.pairs.push(inputBubbleText);
-		return inputBubble;
+		state.addPair(bubbleCircle);
+		state.addPair(inputBubbleText);
+
+		return new inputBubble(bubbleCircle, inputBubbleText);
 	});
 };
 
 designer.drawState = function(x, y, name) {
 	var circle = paper.circle(x, y, 40).attr(designer.circleAttrs);
 	circle.ox = x;
+	circle.cx = x;
 	circle.oy = y;
+	circle.cy = y;
 
 	var text = paper.text(x, y, name).attr(designer.textAttrs);
 	var innerCircle = paper.circle(circle.attrs.cx, circle.attrs.cy, 30).attr(designer.circleAttrs);
@@ -227,16 +326,16 @@ designer.drawState = function(x, y, name) {
 	innerCircle.drag(moveState, stateDragger, up);
 	innerCircle.hide();
 
-	inputBubbles = designer.drawInputBubbles(circle, text, innerCircle, x, y);
+	var state = new stateTemplate(circle, text, innerCircle);
 
-	var state = new stateTemplate(circle, text, innerCircle, inputBubbles);
+	state.inputBubbles = designer.drawInputBubbles(state, x, y);
 	designer.states.push(state);
 	return state;
 };
 
 designer.addConnection = function(obj1, obj2, input, color) {
 	var connection = paper.connection(obj1, obj2, input, color);
-	designer.transitionLines.push(connection);
+	designer.transitions.push(connection);
 };
 
 designer.createJson = function() {
@@ -252,14 +351,20 @@ designer.createJson = function() {
 		return state.name();
 	}).join(",");
 
-	designer.transitionLines.forEach(function(transitionLine) {
+	designer.transitions.forEach(function(transitionLine) {
 		var from = designer.getStateTemplateByPair(transitionLine.from).name();
 		var to = designer.getStateTemplateByPair(transitionLine.to).name();
-		var input = transitionLine.input;
+		var input = transitionLine.input.pairs[0].attrs.text;
 		transitions[from] || (transitions[from] = {});
 		transitions[from][input] = to;
 	});
 
 	json['transitions'] = transitions;
 	return json;
+};
+
+designer.removeState = function(name) {
+	var state = designer.getStateTemplateByText(name);
+	state.remove();
+	designer.states.pop(state);
 };
