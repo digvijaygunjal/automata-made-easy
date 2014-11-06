@@ -4,7 +4,7 @@ var angle = 10;
 designer.states = [];
 designer.transitions = [];
 designer.inputSet = [];
-designer.startState = "A";
+designer.startState = "Start";
 
 designer.circleAttrs = {
 	fill: "#ffffff",
