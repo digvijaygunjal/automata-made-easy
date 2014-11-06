@@ -7,13 +7,13 @@ body, html {
     color:white;
     text-align:center;
     padding:5px;
-    font-family: Courier New;
+    font-family: Arial;
 }
 
 #nav {
     line-height:30px;
     background-color:#eeeeee;
-    width:350px;
+    width:310px;
     height: 100%;
     float:left;
     padding-left: 30px; 
@@ -41,14 +41,14 @@ body, html {
 }
 
 .play{
-    color: #aaa;
+    color: #A4A4A4;
     font-size: 80px;
 }
 .right{
-    color: #2FD709;
+    color: #088A29;
 }
 .wrong{
-    color: #FF0000;
+    color: #8A0808;
 }
 
 #input{
@@ -64,13 +64,13 @@ body, html {
 #input-div{
     padding-left: 200px;
     padding-bottom: 50px;
+    disa
 }
 input::-webkit-input-placeholder { font-size: 30px ; font-weight:normal;}
 
 .canvas{
     height: 70%;
     width: 900px;
-    background-color: #eee;
     overflow: scroll;
     
 }

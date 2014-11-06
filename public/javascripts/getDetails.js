@@ -37,6 +37,7 @@ var operateOnState = function(div_selector, button_selector) {
             designer.removeState(stateText);
             $(this).parent().parent().remove();
         }
+
     });
 };
 
@@ -46,9 +47,12 @@ var checkInputValid = function(input, inputButton) {
         if ($(this).find('span').hasClass("glyphicon-play") && output) {
             $(this).find('span').removeClass('glyphicon-play');
             $(this).find('span').addClass('glyphicon-ok right');
+            $('#input-btn').prop('disabled', true);
+
         } else {
             $(this).find('span').removeClass('glyphicon-play');
             $(this).find('span').addClass('glyphicon-remove wrong');
+            $('#input-btn').prop('disabled', true);
         }
     });
     $(input).click(function() {
@@ -58,9 +62,46 @@ var checkInputValid = function(input, inputButton) {
     });
 };
 
+var EnableInputDiv = function(state_selector, state_button, event_selector, event_button) {
+    var numberOfStates;
+    var numberOfEvents;
+    $(state_selector).on('click', state_button, function() {
+        numberOfStates = $(state_selector).children('.input-group').length;
+        if (numberOfStates > 1 && numberOfEvents > 1) {
+            $('#input').prop('disabled', false);
+        }
+        else{
+            $('#input').prop('disabled', true);
+            $('#input').val('');
+            $('#input-btn').prop('disabled', true);
+        }
+    });
+    $(event_selector).on('click', event_button, function() {
+        numberOfEvents = $(event_selector).children('.input-group').length;
+        if (numberOfStates > 1 && numberOfEvents > 1) {
+            $('#input').prop('disabled', false);
+
+        }
+        else{
+            $('#input').prop('disabled', true);
+            $('#input').val('');
+            $('#input-btn').prop('disabled', true);
+        }
+    });
+
+}
+
+
 
 $(document).ready(function() {
-    addInput('#events', '.event');
-    operateOnState('#states', '.state');
-    checkInputValid('#input', '#input-btn')
+    addInput('#events', '.event', '#input-div');
+    operateOnState('#states', '.state', '#input-div');
+    checkInputValid('#input', '#input-btn');
+    EnableInputDiv('#states', '.state', '#events', '.event');
+    $('#input').on('keyup',function() {
+        if ($(this).val().length > 0)
+            $('#input-btn').prop('disabled', false);
+
+    });
+
 });

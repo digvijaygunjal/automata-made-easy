@@ -11,4 +11,5 @@ var init = function() {
 	paper.clear();
 	var rect = paper.rect(0, 0, "100%", "100%");
 	rect.attr("stroke", "#000000");
+	rect.attr("fill", "#eee");
 };
