@@ -207,12 +207,11 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	};
 
 	self.remove = function() {
-		designer.removeConnectionsForState(self);
+		designer.removeTransactionsForState(self);
 		self.circle.pairs.forEach(function(pair) {
 			pair.hide();
-			pair.remove();
 		});
-		self.circle.remove();
+		self.circle.hide();
 	};
 
 	self.addPair = function(pair) {
@@ -281,21 +280,21 @@ designer.removeInput = function(inputText) {
 	});
 };
 
-designer.removeConnectionsForState = function(state) {
-	var connectionsToDelete = [];
-	designer.transitions.forEach(function(connection) {
-		if (connection.from == state.circle || connection.to == state.circle)
-			connectionsToDelete.push(connection);
+designer.removeTransactionsForState = function(state) {
+	var transitionsToDelete = [];
+	designer.transitions.forEach(function(transition) {
+		if (transition.from == state.circle || transition.to == state.circle)
+			transitionsToDelete.push(transition);
 	});
 
-	connectionsToDelete.forEach(function(connection) {
-		connection.line.hide();
-		connection.line.remove();
-		var stateTemplate = designer.getStateTemplateByPair(connection.input);
-		dragBubbleToState(connection.input, stateTemplate);
-		connection.input.show();
-		connection.input.pairs[0].show();
-		designer.transitions.pop(connection);
+	transitionsToDelete.forEach(function(transition) {
+		var stateTemplate = designer.getStateTemplateByBubble(transition.input);
+		dragBubbleToState(transition.input, stateTemplate);
+		transition.line.hide();
+		transition.line.remove();
+		transition.input.show();
+		transition.input.pairs[0].show();
+		designer.transitions.pop(transition);
 	});
 };
 
@@ -426,6 +425,8 @@ designer.createJson = function() {
 
 designer.removeState = function(name) {
 	var state = designer.getStateTemplateByText(name);
-	state = designer.states.pop(state);
 	state.remove();
+	designer.states = designer.states.filter(function(state){
+		return state.name() != name;
+	});
 };
