@@ -59,6 +59,8 @@ var checkInputValid = function(input, inputButton) {
         $(inputButton).find('span').removeClass('glyphicon-ok right');
         $(inputButton).find('span').removeClass('glyphicon-remove wrong');
         $(inputButton).find('span').addClass('glyphicon-play');
+            $('#input-btn').prop('disabled', false);
+
     });
 };
 
@@ -69,23 +71,22 @@ var EnableInputDiv = function(state_selector, state_button, event_selector, even
         numberOfStates = $(state_selector).children('.input-group').length;
         if (numberOfStates > 1 && numberOfEvents > 1) {
             $('#input').prop('disabled', false);
+            $('#input-btn').prop('disabled', false);
         }
         else{
             $('#input').prop('disabled', true);
             $('#input').val('');
-            $('#input-btn').prop('disabled', true);
         }
     });
     $(event_selector).on('click', event_button, function() {
         numberOfEvents = $(event_selector).children('.input-group').length;
         if (numberOfStates > 1 && numberOfEvents > 1) {
             $('#input').prop('disabled', false);
-
+            $('#input-btn').prop('disabled', false);
         }
         else{
             $('#input').prop('disabled', true);
             $('#input').val('');
-            $('#input-btn').prop('disabled', true);
         }
     });
 
@@ -98,10 +99,4 @@ $(document).ready(function() {
     operateOnState('#states', '.state', '#input-div');
     checkInputValid('#input', '#input-btn');
     EnableInputDiv('#states', '.state', '#events', '.event');
-    $('#input').on('keyup',function() {
-        if ($(this).val().length > 0)
-            $('#input-btn').prop('disabled', false);
-
-    });
-
 });
