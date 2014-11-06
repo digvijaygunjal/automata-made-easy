@@ -20,6 +20,15 @@ designer.textAttrs = {
 	cursor: "move"
 };
 
+var overlap = function(circ1, circ2) {
+	var attrs = ["cx", "cy", "r"];
+	var c1 = circ1.attr(attrs);
+	var c2 = circ2.attr(attrs);
+	var dist = Math.sqrt(Math.pow(c1.cx - c2.cx, 2) + Math.pow(c1.cy - c2.cy, 2));
+	return (dist < (c1.r + c2.r));
+};
+
+
 var stateDragger = function() {
 	// Original coords for main element
 	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
@@ -116,8 +125,8 @@ var dragBubbleToState = function(bubble, bubbleState) {
 		y: bubbleText.y
 	};
 
-	bubble.animate(animateBubbleAttrs, 3000, "elastic");
-	bubbleText.animate(animateBubbleTextAttrs, 3000, "elastic");
+	bubble.animate(animateBubbleAttrs, 2000, "elastic");
+	bubbleText.animate(animateBubbleTextAttrs, 2000, "elastic");
 };
 
 var bubbleDragEnd = function() {
@@ -149,7 +158,7 @@ var inputBubble = function(circle, text) {
 		return self.text.attrs.text;
 	};
 
-	self.remove = function(){
+	self.remove = function() {
 		self.circle.hide();
 		self.circle.remove();
 		self.text.hide();
@@ -190,6 +199,7 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	self.remove = function() {
 		designer.removeConnectionsForState(self);
 		self.circle.pairs.forEach(function(pair) {
+			pair.hide();
 			pair.remove();
 		});
 		self.circle.remove();
@@ -207,10 +217,10 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 		self.innerCircle.pairs.pop(pair);
 	};
 
-	self.getInputBubbleByText = function(text){
+	self.getInputBubbleByText = function(text) {
 		var bubble = null;
-		self.inputBubbles.forEach(function(inputBubble){
-			if(inputBubble.inputText() == text){
+		self.inputBubbles.forEach(function(inputBubble) {
+			if (inputBubble.inputText() == text) {
 				bubble = inputBubble;
 			}
 		});
@@ -219,7 +229,10 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 
 	self.removeInputBubble = function(text) {
 		var inputBubble = self.getInputBubbleByText(text);
-		self.inputBubbles.pop(inputBubble);
+		console.log(inputBubble);
+		console.log(self.inputBubbles);
+		inputBubble = self.inputBubbles.pop(inputBubble);
+		console.log(self.inputBubbles);
 		self.removePair(inputBubble.circle);
 		self.removePair(inputBubble.text);
 		inputBubble.remove();
@@ -229,10 +242,8 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 designer.addInput = function(text) {
 	designer.inputSet.push(text);
 	designer.states.forEach(function(state) {
-		var x = state.circle.cx;
-		var y = state.circle.cy;
-		var bX = x + 45;
-		var bY = y + 45;
+		var bX = state.circle.ox + 60;
+		var bY = state.circle.oy;
 
 		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, text).attr(designer.textAttrs);
@@ -248,7 +259,7 @@ designer.addInput = function(text) {
 
 designer.removeInput = function(inputText) {
 	designer.inputSet.pop(inputText);
-	designer.states.forEach(function(state){
+	designer.states.forEach(function(state) {
 		state.removeInputBubble(inputText);
 	});
 };
@@ -308,6 +319,16 @@ designer.drawInputBubbles = function(state, x, y) {
 };
 
 designer.drawState = function(x, y, name) {
+	designer.states.forEach(function(state) {
+		if (x >= paper.canvas.offsetWidth - 100) {
+			x = 100;
+			y += 200;
+		}
+		if (state.isPointInside(x, y)) {
+			x += 150;
+		}
+	});
+
 	var circle = paper.circle(x, y, 40).attr(designer.circleAttrs);
 	circle.ox = x;
 	circle.cx = x;
@@ -315,6 +336,7 @@ designer.drawState = function(x, y, name) {
 	circle.cy = y;
 
 	var text = paper.text(x, y, name).attr(designer.textAttrs);
+
 	var innerCircle = paper.circle(circle.attrs.cx, circle.attrs.cy, 30).attr(designer.circleAttrs);
 	var inputBubbles = [];
 
@@ -366,6 +388,6 @@ designer.createJson = function() {
 
 designer.removeState = function(name) {
 	var state = designer.getStateTemplateByText(name);
+	state = designer.states.pop(state);
 	state.remove();
-	designer.states.pop(state);
 };

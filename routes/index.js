@@ -11,7 +11,7 @@ router.get('/designer', function(req, res) {
 });
 
 router.get('/home', function(req, res) {
-  res.render('home', { title: 'Get Data' });
+  res.render('home', { title: 'Automata Made Easy' });
 });
 
 module.exports = router;
