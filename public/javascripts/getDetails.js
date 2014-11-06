@@ -10,6 +10,8 @@ var addInput = function(div_selector, button_selector) {
 
                 $(this).find('span').removeClass('glyphicon-plus');
                 $(this).find('span').addClass('glyphicon-minus');
+                console.log($(this).find('input').val())
+                $(this).parent().parent().find('input').prop('disabled',true);
             }
         } else {
             inputText = $(this).parent().parent().find('input').val();
@@ -31,6 +33,8 @@ var operateOnState = function(div_selector, button_selector) {
 
                 $(this).find('span').removeClass('glyphicon-plus');
                 $(this).find('span').addClass('glyphicon-minus');
+                $(this).parent().parent().find('input').prop('disabled',true);
+                
             }
         } else {
             stateText = $(this).parent().parent().find('input').val();
