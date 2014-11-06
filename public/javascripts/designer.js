@@ -1,4 +1,5 @@
 var designer = {};
+var angle = 10;
 
 designer.states = [];
 designer.transitions = [];
@@ -111,10 +112,21 @@ var dragBubbleToState = function(bubble, bubbleState) {
 	bubble = bubble.type == "circle" ? bubble : bubble.pairs[0];
 	bubbleText = bubble.pairs[0];
 
-	bubble.cx = bubbleState.circle.attrs.cx + 60;
-	bubble.cy = bubbleState.circle.attrs.cy;
-	bubbleText.x = bubbleState.circle.attrs.cx + 60;
-	bubbleText.y = bubbleState.circle.attrs.cy;
+	var bX = bubbleState.circle.attrs.cx + 60;
+	var bY = bubbleState.circle.attrs.cy;
+
+	bubbleState.inputBubbles.forEach(function(bubble) {
+		if (bubble.circle.isPointInside(bX, bY)) {
+			bX = (bubbleState.circle.attrs.cx + 60 * Math.cos(angle));
+			bY = (bubbleState.circle.attrs.cy + 60 * Math.sin(angle));
+			angle += 10;
+		}
+	});
+
+	bubble.cx = bX;
+	bubble.cy = bY;
+	bubbleText.x = bX;
+	bubbleText.y = bY;
 
 	var animateBubbleAttrs = {
 		cx: bubble.cx,
@@ -131,7 +143,7 @@ var dragBubbleToState = function(bubble, bubbleState) {
 
 var bubbleDragEnd = function() {
 	var bubble = this.type == 'circle' ? this : this.pairs[0];
-	var bubbleState = designer.getStateTemplateByPair(bubble);
+	var bubbleState = designer.getStateTemplateByBubble(bubble);
 	var inputText = bubble.pairs[0].attrs.text;
 	var stateFound = false;
 	designer.states.forEach(function(state) {
@@ -160,9 +172,7 @@ var inputBubble = function(circle, text) {
 
 	self.remove = function() {
 		self.circle.hide();
-		self.circle.remove();
 		self.text.hide();
-		self.text.remove();
 	};
 
 	return self;
@@ -228,14 +238,13 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	};
 
 	self.removeInputBubble = function(text) {
-		var inputBubble = self.getInputBubbleByText(text);
-		console.log(inputBubble);
-		console.log(self.inputBubbles);
-		inputBubble = self.inputBubbles.pop(inputBubble);
-		console.log(self.inputBubbles);
-		self.removePair(inputBubble.circle);
-		self.removePair(inputBubble.text);
-		inputBubble.remove();
+		var inputBubbleTemp = self.getInputBubbleByText(text);
+		self.inputBubbles = self.inputBubbles.filter(function(inputBubble) {
+			return inputBubble.inputText() != inputBubbleTemp.inputText();
+		});
+		self.removePair(inputBubbleTemp.circle);
+		self.removePair(inputBubbleTemp.text);
+		inputBubbleTemp.remove();
 	};
 };
 
@@ -244,6 +253,14 @@ designer.addInput = function(text) {
 	designer.states.forEach(function(state) {
 		var bX = state.circle.ox + 60;
 		var bY = state.circle.oy;
+
+		state.inputBubbles.forEach(function(bubble) {
+			if (bubble.circle.isPointInside(bX, bY)) {
+				bX = (state.circle.ox + 60 * Math.cos(angle));
+				bY = (state.circle.oy + 60 * Math.sin(angle));
+				angle += 10;
+			}
+		});
 
 		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, text).attr(designer.textAttrs);
@@ -283,13 +300,24 @@ designer.removeConnectionsForState = function(state) {
 };
 
 designer.getStateTemplateByPair = function(pair) {
-	var pairState;
+	var pairState = null;
 	designer.states.forEach(function(state) {
 		if ((state.circle == pair) || (state.circle.pairs.indexOf(pair) != -1)) {
 			pairState = state;
 		}
 	});
 	return pairState;
+};
+
+designer.getStateTemplateByBubble = function(bubbleCircle) {
+	var bubbleState = null;
+	designer.states.forEach(function(state) {
+		state.inputBubbles.forEach(function(inputBubble) {
+			if (inputBubble.circle == bubbleCircle)
+				bubbleState = state;
+		});
+	});
+	return bubbleState;
 };
 
 designer.getStateTemplateByText = function(name) {
@@ -301,9 +329,18 @@ designer.getStateTemplateByText = function(name) {
 };
 
 designer.drawInputBubbles = function(state, x, y) {
-	return designer.inputSet.map(function(inputText) {
-		var bX = x + 45;
-		var bY = y + 45;
+	var inputBubbles = [];
+	designer.inputSet.map(function(inputText) {
+		var bX = x + 60;
+		var bY = y;
+
+		inputBubbles.forEach(function(bubble) {
+			if (bubble.circle.isPointInside(bX, bY)) {
+				bX = (state.circle.ox + 60 * Math.cos(angle));
+				bY = (state.circle.oy + 60 * Math.sin(angle));
+				angle += 10;
+			}
+		});
 
 		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, inputText).attr(designer.textAttrs);
@@ -314,8 +351,9 @@ designer.drawInputBubbles = function(state, x, y) {
 		state.addPair(bubbleCircle);
 		state.addPair(inputBubbleText);
 
-		return new inputBubble(bubbleCircle, inputBubbleText);
+		inputBubbles.push(new inputBubble(bubbleCircle, inputBubbleText));
 	});
+	return inputBubbles;
 };
 
 designer.drawState = function(x, y, name) {
