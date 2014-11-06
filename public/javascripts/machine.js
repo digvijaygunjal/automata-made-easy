@@ -11,11 +11,13 @@ var Machine = function(startState, finalStates, all) {
 	};
 
 	self.isInputAccepted = function(text) {
+		var result = true;
+
 		text.split('').forEach(function(input) {
-			self.acceptInput(input);
+			result  = self.acceptInput(input);
 		});
-		
-		var result = (finalStates.indexOf(self.current) != -1);
+		if(!result) return result;
+		result = (finalStates.indexOf(self.current) != -1);
 		self.current = self.startState;
 		return result;
 	};
