@@ -7,13 +7,15 @@ var getKeys = function(json) {
 var getStateByName = function(states, name) {
 	var state = null;
 	states.forEach(function(s) {
-		if(s.name == name)	state = s;
+		if (s.name == name) state = s;
 	});
 	return state;
 };
 
 var createStates = function(json) {
 	var stateNames = getKeys(json.transitions);
+	if (stateNames.length == 0)
+		stateNames.push(json.start);
 
 	var states = stateNames.map(function(StateName) {
 		return new State(StateName);
@@ -21,8 +23,10 @@ var createStates = function(json) {
 
 	states.forEach(function(state) {
 		json.inputSet.split(',').forEach(function(input) {
-			var name = json.transitions[state.name][input];
-			state.transitions[input] = getStateByName(states, name);
+			if (json.transitions[state.name]) {
+				var name = json.transitions[state.name][input];
+				state.transitions[input] = getStateByName(states, name);
+			}
 		});
 	});
 
