@@ -8,6 +8,25 @@ body, html {
     text-align:center;
     padding:5px;
     font-family: Arial;
+    font-size: 30px;
+}
+.model{
+    float:right;
+    background-color: transparent;
+    font-size: 20px;
+    border-right-color: #000;
+    border-top-color: #000;
+
+
+}
+
+
+.my_instruction{
+    color: #000;
+}
+.instructions{
+    font-size: 20px;
+    text-align: left;
 }
 
 #nav {

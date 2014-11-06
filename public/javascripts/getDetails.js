@@ -105,5 +105,5 @@ $(document).ready(function() {
     operateOnState('#states', '.state', '#input-div');
     checkInputValid('#input', '#input-btn');
     EnableInputDiv('#states', '.state', '#events', '.event');
-
+    $('#myModal').modal('show');
 });

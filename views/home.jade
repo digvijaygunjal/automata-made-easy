@@ -5,22 +5,52 @@ block content
 
   body(onload='init()')
   #header
-    h1 Automata Made Easy
-    
+    span Automata Made Easy
+    button.btn-lg.model(type='button', data-toggle='modal', data-target='#myModal')
+            span.glyphicon.glyphicon-info-sign
+    #myModal.modal.fade.my_instruction(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal')
+              span(aria-hidden='true') ×
+              span.sr-only Close
+            h4 INSTRUCTIONS
+          .modal-body.instructions
+            ul
+              li
+                | SYMBOLS : Enter possible input symbol(One in each box) Add more symbol using '+' and remove it using '-'.
+                hr
+              li
+                | STATES : Enter your state name(One in each box) Add more states clicking on '+' and remove it clicking on '-'.
+                hr
+              li 
+                | START STATE : You will get a default Start state. 
+                hr
+              li 
+                | FINAL STATE : Double click on a state to make it final and vice versa.
+                hr
+              li  
+                | TRANSITIONS : Drag an input bubble to other state for creating a transation.
+                hr
+              li
+                | INPUT STRING : Enables Only when you have basic DFA ready. Test your string by pressing the |> buttons.
+          .modal-footer
+
   #nav
     #events
       span SYMBOLS
       .input-group
         input.form-control(type="text")
         span.input-group-btn
-          button.btn.btn-default.event(type="button")
+          button.btn.btn-default.event(type="button" )
             span.glyphicon.glyphicon-plus
     #states
       span STATES
       .input-group
         input.form-control(type="text"  value="Start"  disabled)
         span.input-group-btn
-          button.btn.btn-default.state(type="button")
+          button.btn.btn-default.state(type="button" )
             span.glyphicon.glyphicon-plus
   #section
    #input-div.input-group
