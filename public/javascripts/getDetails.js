@@ -2,7 +2,7 @@ var addInput = function(div_selector, button_selector) {
     $(div_selector).on('click', button_selector, function() {
         var event_textbox = $("<div />").append($(div_selector).children(':last').clone())
             .html();
-        var text = $(div_selector).children(':last').find('input').val();
+        var text = $(div_selector).children(':last').find('input').val().trim();
         if ($(this).find('span').hasClass("glyphicon-plus")) {
             if (text && (text.length == 1) && designer.inputSet.indexOf(text) == -1) {
                 $(div_selector).append(event_textbox);
