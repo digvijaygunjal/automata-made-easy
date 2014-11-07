@@ -9,7 +9,6 @@ designer.startState = "Start";
 designer.circleAttrs = {
 	fill: "#ffffff",
 	stroke: "#000000",
-	"fill-opacity": 0,
 	"stroke-width": 2,
 	cursor: "move"
 };
@@ -137,8 +136,8 @@ var dragBubbleToState = function(bubble, bubbleState) {
 		y: bubbleText.y
 	};
 
-	bubble.animate(animateBubbleAttrs, 2000, "elastic");
-	bubbleText.animate(animateBubbleTextAttrs, 2000, "elastic");
+	bubble.animate(animateBubbleAttrs, 1000, "elastic");
+	bubbleText.animate(animateBubbleTextAttrs, 1000, "elastic");
 };
 
 var bubbleDragEnd = function() {
@@ -207,7 +206,7 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 	};
 
 	self.remove = function() {
-		designer.removeTransactionsForState(self);
+		designer.removeTransitionsForState(self);
 		self.circle.pairs.forEach(function(pair) {
 			pair.hide();
 		});
@@ -241,8 +240,15 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 		self.inputBubbles = self.inputBubbles.filter(function(inputBubble) {
 			return inputBubble.inputText() != inputBubbleTemp.inputText();
 		});
+
 		self.removePair(inputBubbleTemp.circle);
 		self.removePair(inputBubbleTemp.text);
+		designer.transitions.forEach(function(transition) {
+			if(inputBubbleTemp.circle == transition.input){
+				transition.line.hide();
+				designer.transitions.pop(transition);
+			}
+		});
 		inputBubbleTemp.remove();
 	};
 };
@@ -280,7 +286,7 @@ designer.removeInput = function(inputText) {
 	});
 };
 
-designer.removeTransactionsForState = function(state) {
+designer.removeTransitionsForState = function(state) {
 	var transitionsToDelete = [];
 	designer.transitions.forEach(function(transition) {
 		if (transition.from == state.circle || transition.to == state.circle)
@@ -426,7 +432,7 @@ designer.createJson = function() {
 designer.removeState = function(name) {
 	var state = designer.getStateTemplateByText(name);
 	state.remove();
-	designer.states = designer.states.filter(function(state){
+	designer.states = designer.states.filter(function(state) {
 		return state.name() != name;
 	});
 };
