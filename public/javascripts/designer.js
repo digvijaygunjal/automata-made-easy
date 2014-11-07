@@ -7,7 +7,9 @@ designer.inputSet = [];
 designer.startState = "Start";
 
 designer.circleAttrs = {
+	fill: "#ffffff",
 	stroke: "#000000",
+	"fill-opacity": 0,
 	"stroke-width": 2,
 	cursor: "move"
 };
