@@ -7,7 +7,6 @@ designer.inputSet = [];
 designer.startState = "Start";
 
 designer.circleAttrs = {
-	fill: "#ffffff",
 	stroke: "#000000",
 	"stroke-width": 2,
 	cursor: "move"
@@ -244,7 +243,7 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 		self.removePair(inputBubbleTemp.circle);
 		self.removePair(inputBubbleTemp.text);
 		designer.transitions.forEach(function(transition) {
-			if(inputBubbleTemp.circle == transition.input){
+			if (inputBubbleTemp.circle == transition.input) {
 				transition.line.hide();
 				designer.transitions.pop(transition);
 			}

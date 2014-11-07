@@ -23,8 +23,8 @@ var addInput = function(div_selector, button_selector) {
 var operateOnState = function(div_selector, button_selector) {
     $(div_selector).on('click', button_selector, function() {
         var newDiv = $(div_selector).children(':last').clone();
-        newDiv.find('input').attr('value','');
-        newDiv.find('input').prop('disabled',false);
+        newDiv.find('input').attr('value', '');
+        newDiv.find('input').prop('disabled', false);
 
         var event_textbox = $("<div />").append(newDiv).html();
         var text = $(div_selector).children(':last').find('input').val();
@@ -44,7 +44,7 @@ var operateOnState = function(div_selector, button_selector) {
             designer.removeState(stateText);
             $(this).parent().parent().remove();
         }
-        $(div_selector).children().eq(1).find('button').prop('disabled',true);
+        $(div_selector).children().eq(1).find('button').prop('disabled', true);
 
     });
 };
@@ -98,12 +98,22 @@ var EnableInputDiv = function(state_selector, state_button, event_selector, even
 
 }
 
-
-
 $(document).ready(function() {
     addInput('#events', '.event', '#input-div');
     operateOnState('#states', '.state', '#input-div');
     checkInputValid('#input', '#input-btn');
     EnableInputDiv('#states', '.state', '#events', '.event');
     $('#myModal').modal('show');
+
+    $("#input").keyup(function(event) {
+        var inputButton = '#input-btn';
+        if (event.keyCode == 13) {
+            $("#input-btn").click();
+        } else {
+            $(inputButton).find('span').removeClass('glyphicon-ok right');
+            $(inputButton).find('span').removeClass('glyphicon-remove wrong');
+            $(inputButton).find('span').addClass('glyphicon-play');
+            $('#input-btn').prop('disabled', false);
+        }
+    });
 });
