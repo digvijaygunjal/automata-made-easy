@@ -77,14 +77,16 @@ var moveState = function(dx, dy) {
 
 
 	// Move Transition lines
-	for (i = designer.transitions.length; i--;) {
-		paper.connection(designer.transitions[i]);
-	}
+	designer.transitions.forEach(function(transition) {
+		paper.connection(transition);
+	});
 };
 
 var moveBubble = function(dx, dy) {
+	var bubble = this.type == "circle" ? this : this.pairs[0];
+	// update line
+	bubble.update && bubble.update(dx - (bubble.dx || 0), dy - (bubble.dy || 0));
 	// Move main element
-	var bubble = this;
 	var att = bubble.type == "circle" ? {
 		cx: bubble.ox + dx,
 		cy: bubble.oy + dy
@@ -108,6 +110,25 @@ var moveBubble = function(dx, dy) {
 
 var up = function() {};
 
+var dragBubbleTo = function(bubble, bubbleText, x, y) {
+	bubble.cx = x;
+	bubble.cy = y;
+	bubbleText.x = x;
+	bubbleText.y = y;
+
+	var animateBubbleAttrs = {
+		cx: bubble.cx,
+		cy: bubble.cy
+	};
+	var animateBubbleTextAttrs = {
+		x: bubbleText.x,
+		y: bubbleText.y
+	};
+
+	bubble.animate(animateBubbleAttrs, 1000, "elastic");
+	bubbleText.animate(animateBubbleTextAttrs, 1000, "elastic");
+};
+
 var dragBubbleToState = function(bubble, bubbleState) {
 	bubble = bubble.type == "circle" ? bubble : bubble.pairs[0];
 	bubbleText = bubble.pairs[0];
@@ -123,22 +144,17 @@ var dragBubbleToState = function(bubble, bubbleState) {
 		}
 	});
 
-	bubble.cx = bX;
-	bubble.cy = bY;
-	bubbleText.x = bX;
-	bubbleText.y = bY;
+	dragBubbleTo(bubble, bubbleText, bX, bY);
+};
 
-	var animateBubbleAttrs = {
-		cx: bubble.cx,
-		cy: bubble.cy
-	};
-	var animateBubbleTextAttrs = {
-		x: bubbleText.x,
-		y: bubbleText.y
-	};
+var dragBubbleOnTransitionLine = function(bubble, transitionLine) {
+	bubble = bubble.type == "circle" ? bubble : bubble.pairs[0];
+	bubbleText = bubble.pairs[0];
 
-	bubble.animate(animateBubbleAttrs, 1000, "elastic");
-	bubbleText.animate(animateBubbleTextAttrs, 1000, "elastic");
+	var length = transitionLine.getTotalLength();
+	var point = transitionLine.getPointAtLength(length / 2);
+
+	dragBubbleTo(bubble, bubbleText, point.x, point.y);
 };
 
 var bubbleDragEnd = function() {
@@ -147,16 +163,13 @@ var bubbleDragEnd = function() {
 	var inputText = bubble.pairs[0].attrs.text;
 	var stateFound = false;
 	designer.states.forEach(function(state) {
-		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy)) {
-			bubble.pairs.forEach(function(pair) {
-				pair.hide();
-			});
-			bubble.hide();
+		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy) && !bubble.onTransition) {
 			designer.addConnection(bubbleState.circle, state.circle, bubble, "#000000");
 			stateFound = true;
 		}
 	});
-	if (!stateFound) dragBubbleToState(bubble, bubbleState);
+	if (stateFound && bubble.onTransition) dragBubbleOnTransitionLine(bubble, designer.transitions[designer.transitions.length - 1].line);
+	if (!stateFound && !bubble.onTransition) dragBubbleToState(bubble, bubbleState);
 };
 
 var inputBubble = function(circle, text) {

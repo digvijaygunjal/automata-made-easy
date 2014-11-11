@@ -1,4 +1,5 @@
 Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
+    input && (input.onTransition = true);
     if (obj1.line && obj1.from && obj1.to) {
         line = obj1;
         obj1 = line.from;
@@ -68,21 +69,47 @@ Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
         });
     } else {
         var color = typeof line == "string" ? line : "#000";
-        return {
-            bg: bg && bg.split && this.path(path).attr({
-                stroke: bg.split("|")[0],
-                fill: "none",
-                "stroke-width": bg.split("|")[1] || 3
-            }),
-            line: this.path(path).attr({
-                stroke: color,
-                fill: "none",
-                'stroke-width': 2,
-                'arrow-end': 'classic-wide-long'
-            }),
+
+        var bg = bg && bg.split && this.path(path).attr({
+            stroke: bg.split("|")[0],
+            fill: "none",
+            "stroke-width": bg.split("|")[1] || 3
+        });
+
+        var myLine = this.path(path).attr({
+            stroke: color,
+            fill: "none",
+            'stroke-width': 2,
+            'arrow-end': 'classic-wide-long'
+        });
+
+        var myConnection = {
+            bg: bg,
+            line: myLine,
             from: obj1,
             to: obj2,
             input: input
         };
+
+        input.update = function(x, y) {
+            var X = this.attr("cx") + x;
+            var Y = this.attr("cy") + y;
+            this.attr({
+                cx: X,
+                cy: Y
+            });
+
+            var tempPath = myConnection.line.attrs.path;
+            path = ["M", tempPath[0][1], tempPath[0][2], "C", X, Y, tempPath[1][3], tempPath[1][4], tempPath[1][5], tempPath[1][6]].join(",");
+            myConnection.line.hide();
+            myConnection.line.remove();
+            myConnection.line = paper.path(path).attr({
+                stroke: color,
+                fill: "none",
+                'stroke-width': 2,
+                'arrow-end': 'classic-wide-long'
+            });
+        };
+        return myConnection;
     }
 };
