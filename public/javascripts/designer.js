@@ -61,7 +61,11 @@ var moveState = function(dx, dy) {
 			x: pair.ox + dx,
 			y: pair.oy + dy
 		};
-		pair.attr(att);
+		if (pair.isBubble && pair.onTransition || pair.pairs[0].isBubble && pair.pairs[0].onTransition) {
+			// do not move			
+		} else {
+			pair.attr(att);
+		}
 	});
 
 	// Move Transition lines
@@ -164,6 +168,7 @@ var bubbleDragEnd = function() {
 var inputBubble = function(circle, text) {
 	var self = this;
 	self.circle = circle;
+	self.circle.isBubble = true;
 	self.circle.pairs = [text];
 	self.text = text;
 	self.text.pairs = [circle];

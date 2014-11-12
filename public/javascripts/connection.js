@@ -46,7 +46,7 @@ Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
             var dx = Math.abs(from.x - to.x);
             var dy = Math.abs(from.y - to.y);
             dis.push(dx + dy);
-            d[dis[dis.length - 1]] = [from, to];            
+            d[dis[dis.length - 1]] = [from, to];
         });
     });
 
@@ -57,10 +57,19 @@ Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
     var x4 = res[1].x;
     var y4 = res[1].y;
 
+    var x2 = x1;
+    var y2 = y1;
+
+    if (line.line && line.line.attrs) {
+        var tempPath = line.line.attrs.path;
+        x2 = tempPath[1][1];
+        y2 = tempPath[1][2];
+    }
+
     dx = Math.max(Math.abs(x1 - x4) / 2, 10);
     dy = Math.max(Math.abs(y1 - y4) / 2, 10);
 
-    var path = ["M", x1.toFixed(3), y1.toFixed(3), "C", x1, y1, x4, y4, x4.toFixed(3), y4.toFixed(3)].join(",");
+    var path = ["M", x1.toFixed(3), y1.toFixed(3), "C", x2, y2, x4, y4, x4.toFixed(3), y4.toFixed(3)].join(",");
 
     if (line && line.line) {
         line.bg && line.bg.attr({
