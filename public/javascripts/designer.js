@@ -21,15 +21,6 @@ designer.textAttrs = {
 	cursor: "move"
 };
 
-var overlap = function(circ1, circ2) {
-	var attrs = ["cx", "cy", "r"];
-	var c1 = circ1.attr(attrs);
-	var c2 = circ2.attr(attrs);
-	var dist = Math.sqrt(Math.pow(c1.cx - c2.cx, 2) + Math.pow(c1.cy - c2.cy, 2));
-	return (dist < (c1.r + c2.r));
-};
-
-
 var stateDragger = function() {
 	// Original coords for main element
 	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
@@ -53,7 +44,6 @@ var bubbleDragger = function() {
 };
 
 var moveState = function(dx, dy) {
-	// Move main element
 	var att = this.type == "circle" ? {
 		cx: this.ox + dx,
 		cy: this.oy + dy
@@ -63,7 +53,6 @@ var moveState = function(dx, dy) {
 	};
 	this.attr(att);
 
-	// Move paired element
 	this.pairs.forEach(function(pair) {
 		att = pair.type == "circle" ? {
 			cx: pair.ox + dx,
@@ -74,7 +63,6 @@ var moveState = function(dx, dy) {
 		};
 		pair.attr(att);
 	});
-
 
 	// Move Transition lines
 	designer.transitions.forEach(function(transition) {
@@ -130,14 +118,14 @@ var dragBubbleTo = function(bubble, bubbleText, x, y) {
 };
 
 var dragBubbleToState = function(bubble, bubbleState) {
-	bubble = bubble.type == "circle" ? bubble : bubble.pairs[0];
+	bubble = (bubble.type == "circle") ? bubble : bubble.pairs[0];
 	bubbleText = bubble.pairs[0];
 
 	var bX = bubbleState.circle.attrs.cx + 60;
 	var bY = bubbleState.circle.attrs.cy;
 
-	bubbleState.inputBubbles.forEach(function(bubble) {
-		if (bubble.circle.isPointInside(bX, bY)) {
+	bubbleState.inputBubbles.forEach(function(inputBubble) {
+		if (inputBubble.circle.isPointInside(bX, bY)) {
 			bX = (bubbleState.circle.attrs.cx + 60 * Math.cos(angle));
 			bY = (bubbleState.circle.attrs.cy + 60 * Math.sin(angle));
 			angle += 10;
@@ -162,13 +150,14 @@ var bubbleDragEnd = function() {
 	var bubbleState = designer.getStateTemplateByBubble(bubble);
 	var inputText = bubble.pairs[0].attrs.text;
 	var stateFound = false;
+
 	designer.states.forEach(function(state) {
 		if (state.isPointInside(bubble.attrs.cx, bubble.attrs.cy) && !bubble.onTransition) {
 			designer.addConnection(bubbleState.circle, state.circle, bubble, "#000000");
+			dragBubbleOnTransitionLine(bubble, designer.transitions[designer.transitions.length - 1].line);
 			stateFound = true;
 		}
 	});
-	if (stateFound && bubble.onTransition) dragBubbleOnTransitionLine(bubble, designer.transitions[designer.transitions.length - 1].line);
 	if (!stateFound && !bubble.onTransition) dragBubbleToState(bubble, bubbleState);
 };
 
