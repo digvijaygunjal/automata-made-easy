@@ -1,2 +1,2 @@
-automata-made-easy
+Automata Made Easy
 ==================
