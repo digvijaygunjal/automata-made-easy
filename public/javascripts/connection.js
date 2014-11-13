@@ -82,6 +82,9 @@ Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
 		line.line.attr({
 			path: path
 		});
+		var length = line.line.getTotalLength();
+		var point = line.line.getPointAtLength(length / 2);
+		dragBubbleTo(line.input, line.input.pairs[0], point.x, point.y);
 	} else {
 		var color = typeof line == "string" ? line : "#000";
 
@@ -106,6 +109,7 @@ Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
 			input: input
 		};
 
+		myLine.input = input;
 		input.update = function(x, y) {
 			var X = this.attr("cx") + x;
 			var Y = this.attr("cy") + y;

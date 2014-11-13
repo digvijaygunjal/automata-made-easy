@@ -25,18 +25,7 @@ var stateDragger = function() {
 	// Original coords for main element
 	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
 	this.oy = this.type == "circle" ? this.attr("cy") : this.attr("y");
-	// Original coords for pair element
-	this.pairs.forEach(function(pair) {
-		pair.ox = pair.type == "circle" ? pair.attr("cx") : pair.attr("x");
-		pair.oy = pair.type == "circle" ? pair.attr("cy") : pair.attr("y");
-	});
-};
-
-var bubbleDragger = function() {
-	// Original coords for main element
-	this.ox = this.type == "circle" ? this.attr("cx") : this.attr("x");
-	this.oy = this.type == "circle" ? this.attr("cy") : this.attr("y");
-	// Original coords for pair element
+	// Original coords for pairs element
 	this.pairs.forEach(function(pair) {
 		pair.ox = pair.type == "circle" ? pair.attr("cx") : pair.attr("x");
 		pair.oy = pair.type == "circle" ? pair.attr("cy") : pair.attr("y");
@@ -278,8 +267,8 @@ designer.addInput = function(text) {
 		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, text).attr(designer.textAttrs);
 
-		bubbleCircle.drag(moveBubble, bubbleDragger, bubbleDragEnd);
-		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+		bubbleCircle.drag(moveBubble, stateDragger, bubbleDragEnd);
+		inputBubbleText.drag(moveBubble, stateDragger, bubbleDragEnd);
 
 		state.addPair(bubbleCircle);
 		state.addPair(inputBubbleText);
@@ -358,8 +347,8 @@ designer.drawInputBubbles = function(state, x, y) {
 		var bubbleCircle = paper.circle(bX, bY, 10).attr(designer.circleAttrs);
 		var inputBubbleText = paper.text(bX, bY, inputText).attr(designer.textAttrs);
 
-		bubbleCircle.drag(moveBubble, bubbleDragger, bubbleDragEnd);
-		inputBubbleText.drag(moveBubble, bubbleDragger, bubbleDragEnd);
+		bubbleCircle.drag(moveBubble, stateDragger, bubbleDragEnd);
+		inputBubbleText.drag(moveBubble, stateDragger, bubbleDragEnd);
 
 		state.addPair(bubbleCircle);
 		state.addPair(inputBubbleText);
