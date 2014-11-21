@@ -9,7 +9,7 @@ designer.startState = "Start";
 designer.circleAttrs = {
 	fill: "#ffffff",
 	stroke: "#000000",
-	"fill-opacity": 0,
+	"fill-opacity": 0.5,
 	"stroke-width": 2,
 	cursor: "move"
 };
@@ -50,11 +50,8 @@ var moveState = function(dx, dy) {
 			x: pair.ox + dx,
 			y: pair.oy + dy
 		};
-		if (pair.isBubble && pair.onTransition || pair.pairs[0].isBubble && pair.pairs[0].onTransition) {
-			// do not move			
-		} else {
+		if (!(pair.isBubble && pair.onTransition || pair.pairs[0].isBubble && pair.pairs[0].onTransition))
 			pair.attr(att);
-		}
 	});
 
 	// Move Transition lines
@@ -66,7 +63,7 @@ var moveState = function(dx, dy) {
 var moveBubble = function(dx, dy) {
 	var bubble = this.type == "circle" ? this : this.pairs[0];
 	// update line
-	bubble.update && bubble.update(dx - (bubble.dx || 0), dy - (bubble.dy || 0));
+	bubble.update && bubble.update(dx, dy);
 	// Move main element
 	var att = bubble.type == "circle" ? {
 		cx: bubble.ox + dx,
@@ -171,6 +168,11 @@ var inputBubble = function(circle, text) {
 		self.text.hide();
 	};
 
+	self.hide = function(){
+		self.circle.hide();
+		self.text.hide();
+	};
+
 	return self;
 };
 
@@ -240,13 +242,25 @@ var stateTemplate = function(circle, text, innerCircle, inputBubbles) {
 
 		self.removePair(inputBubbleTemp.circle);
 		self.removePair(inputBubbleTemp.text);
+
+		var transitionsToRemove = [];
 		designer.transitions.forEach(function(transition) {
 			if (inputBubbleTemp.circle == transition.input) {
 				transition.line.hide();
-				designer.transitions.pop(transition);
+				transitionsToRemove.push(transition);
 			}
 		});
+
+		transitionsToRemove.forEach(function(transition) {
+			designer.transitions.pop(transition);
+		});
 		inputBubbleTemp.remove();
+	};
+
+	self.hideBubbles = function(){
+		self.inputBubbles.forEach(function(bubble){
+			bubble.hide();
+		});
 	};
 };
 
@@ -432,4 +446,18 @@ designer.removeState = function(name) {
 	designer.states = designer.states.filter(function(state) {
 		return state.name() != name;
 	});
+};
+
+designer.animateFlow = function(input) {
+	// designer.states.forEach(function(state) {
+	// 	state.hideBubbles();
+	// });
+
+	input.split('').forEach(function(t){
+
+	});
+
+	// designer.states.forEach(function(state) {
+	// 	state.showBubbles();
+	// });	
 };

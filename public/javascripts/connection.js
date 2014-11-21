@@ -84,7 +84,7 @@ Raphael.fn.connection = function(obj1, obj2, input, line, bg) {
 		});
 		var length = line.line.getTotalLength();
 		var point = line.line.getPointAtLength(length / 2);
-		dragBubbleTo(line.input, line.input.pairs[0], point.x, point.y);
+		dragBubbleTo(line.input, line.input.pairs[0], point.x + 15, point.y + 15);
 	} else {
 		var color = typeof line == "string" ? line : "#000";
 

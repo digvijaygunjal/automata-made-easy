@@ -52,17 +52,18 @@ var operateOnState = function(div_selector, button_selector) {
 var checkInputValid = function(input, inputButton) {
     $(inputButton).click(function() {
         var output = createAndCheckInput($(input).val());
+        designer.animateFlow($(input).val());
         if ($(this).find('span').hasClass("glyphicon-play") && output) {
             $(this).find('span').removeClass('glyphicon-play');
             $(this).find('span').addClass('glyphicon-ok right');
             $('#input-btn').prop('disabled', true);
-
         } else {
             $(this).find('span').removeClass('glyphicon-play');
             $(this).find('span').addClass('glyphicon-remove wrong');
             $('#input-btn').prop('disabled', true);
         }
     });
+
     $(input).click(function() {
         $(inputButton).find('span').removeClass('glyphicon-ok right');
         $(inputButton).find('span').removeClass('glyphicon-remove wrong');
