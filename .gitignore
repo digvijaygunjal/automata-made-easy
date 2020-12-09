@@ -1,3 +1,4 @@
 node_modules
 .failures
 **/.DS_Store
+.idea/
