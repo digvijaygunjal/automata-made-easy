@@ -1,33 +1,28 @@
 Automata Made Easy
 ==================
 
+# Installation
 
-#Installation
+- Clone project from github
 
-  - Clone project from github
+      git clone https://github.com/digvijay19/automata-made-easy.git
 
-        git clone https://github.com/digvijay19/automata-made-easy.git
-        
-  - Install node and npm (if you don't have already)
+- Install node and npm (if you don't have already)
 
-  - Go to directory of project "automata-made-easy".
+- Go to directory of project "automata-made-easy".
 
-  - Install project dependencies using npm
+- Install project dependencies using npm
 
-        npm install
+      npm install
 
- 
+# Run
 
-#Run
-  - Start server
+- Start server
 
-        npm start
-        
-  
-#Use
+      npm start
 
-  - Goto browser and paste Url as :
+# Use
 
-        localhost:3000/home
+- Goto browser and paste Url as:
 
-
+      localhost:3000/home

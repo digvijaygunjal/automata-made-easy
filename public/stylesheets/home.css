@@ -3,93 +3,97 @@ body, html {
 }
 
 #header {
-    background-color:black;
-    color:white;
-    text-align:center;
-    padding:5px;
-    font-family: Arial;
-    font-size: 30px;
-}
-.model{
-    float:right;
-    background-color: transparent;
-    font-size: 20px;
-    border-right-color: #000;
-    border-top-color: #000;
-
-
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  font-family: Arial;
+  font-size: 30px;
 }
 
-
-.my_instruction{
-    color: #000;
+.model {
+  float: right;
+  background-color: transparent;
+  font-size: 20px;
+  border-right-color: #000;
+  border-top-color: #000;
 }
-.instructions{
-    font-size: 20px;
-    text-align: left;
+
+.my_instruction {
+  color: #000;
+}
+
+.instructions {
+  font-size: 20px;
+  text-align: left;
 }
 
 #nav {
-    line-height:30px;
-    background-color:#eeeeee;
-    width:310px;
-    height: 100%;
-    float:left;
-    padding-left: 30px; 
-    padding-top: 20px;
+  line-height: 30px;
+  background-color: #eeeeee;
+  width: 310px;
+  height: 100%;
+  float: left;
+  padding-left: 30px;
+  padding-top: 20px;
 }
 
 #section {
-    width:400px;
-    height: 100%;
-    float:left;
-    padding-left:50px; 
-    padding-top: 20px;
+  width: 400px;
+  height: 100%;
+  float: left;
+  padding-left: 50px;
+  padding-top: 20px;
 }
 
-#events , #states{
-    margin-bottom: 20px;
-    background-color: #aaa;
-    width: 250px;
-    height: 45%;
-    float: left;
-    border-radius: 5px;
-    padding:10px;
-    overflow: scroll;
-
+#events, #states {
+  margin-bottom: 20px;
+  background-color: #aaa;
+  width: 250px;
+  height: 45%;
+  float: left;
+  border-radius: 5px;
+  padding: 10px;
+  overflow: scroll;
 }
 
-.play{
-    color: #A4A4A4;
-    font-size: 80px;
-}
-.right{
-    color: #088A29;
-}
-.wrong{
-    color: #8A0808;
+.play {
+  color: #A4A4A4;
+  font-size: 80px;
 }
 
-#input{
-    height: 100px;
-    width: 500px;
-    font-size: 50px;
-    font-weight: bold;
+.right {
+  color: #088A29;
 }
-#input-btn{
-    height: 100px;
-    width: 100px;
-}
-#input-div{
-    padding-left: 150px;
-    padding-bottom: 50px;
-    disa
-}
-input::-webkit-input-placeholder { font-size: 30px ; font-weight:normal;}
 
-.canvas{
-    height: 70%;
-    width: 900px;
-    overflow: scroll;
-    
+.wrong {
+  color: #8A0808;
+}
+
+#input {
+  height: 100px;
+  width: 500px;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+#input-btn {
+  height: 100px;
+  width: 100px;
+}
+
+#input-div {
+  padding-left: 150px;
+  padding-bottom: 50px;
+}
+
+input::-webkit-input-placeholder {
+  font-size: 30px;
+  font-weight: normal;
+}
+
+.canvas {
+  height: 70%;
+  width: 900px;
+  overflow: scroll;
 }
