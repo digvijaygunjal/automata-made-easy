@@ -1,13 +1,12 @@
-extends layout
+extends layout.jade
 
-   
 block content
 
   body(onload='init()')
   #header
     span Automata Made Easy
     button.btn-lg.model(type='button', data-toggle='modal', data-target='#myModal')
-            span.glyphicon.glyphicon-info-sign
+      span.glyphicon.glyphicon-info-sign
     #myModal.modal.fade.my_instruction(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-dialog
         .modal-content
@@ -53,12 +52,9 @@ block content
           button.btn.btn-default.state(type="button" )
             span.glyphicon.glyphicon-plus
   #section
-   #input-div.input-group
-       input#input.form-control(type='text', placeholder='Input String'  disabled)
-       span.input-group-btn
-         button#input-btn.btn.btn-default(type='button'  disabled)
-           span.glyphicon.glyphicon-play.play
-     .canvas
-
-       
- 
+    #input-div.input-group
+      input#input.form-control(type='text', placeholder='Input String'  disabled)
+      span.input-group-btn
+        button#input-btn.btn.btn-default(type='button'  disabled)
+          span.glyphicon.glyphicon-play.play
+    .canvas

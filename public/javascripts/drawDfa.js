@@ -1,9 +1,39 @@
 var dfaMachine = null;
 
+// Sanitize input to prevent XSS
+var sanitizeInput = function(input) {
+	if (typeof input !== 'string') return '';
+	// Remove potentially dangerous characters
+	return input.replace(/[<>\"']/g, '');
+};
+
+// Validate JSON structure
+var validateMachineJson = function(json) {
+	if (!json || typeof json !== 'object') return false;
+	if (!json.start || typeof json.start !== 'string') return false;
+	if (!json.inputSet || typeof json.inputSet !== 'string') return false;
+	if (!json.final || typeof json.final !== 'string') return false;
+	if (!json.transitions || typeof json.transitions !== 'object') return false;
+	return true;
+};
+
 var drawDfa = function() {
-	var textJson = document.getElementById('text-box').value;
-	var json = JSON.parse(textJson)
-	dfaMachine = MachineParser.createMachine(json);
+	try {
+		var textJson = document.getElementById('text-box').value;
+		if (!textJson || textJson.trim() === '') {
+			alert('Please enter a valid JSON');
+			return;
+		}
+		var json = JSON.parse(textJson);
+		if (!validateMachineJson(json)) {
+			alert('Invalid machine JSON structure');
+			return;
+		}
+		dfaMachine = MachineParser.createMachine(json);
+	} catch (e) {
+		alert('Error parsing JSON: ' + e.message);
+		console.error('JSON parse error:', e);
+	}
 };
 
 var checkInput = function(text) {
@@ -12,7 +42,17 @@ var checkInput = function(text) {
 		return;
 	}
 	var input = text || document.getElementById('input').value;
-	var isInputAccepted = dfaMachine.isInputAccepted(input.trim());
+	if (!input || typeof input !== 'string') {
+		alert('Invalid input');
+		return false;
+	}
+	// Sanitize and validate input - only allow alphanumeric and common symbols
+	var sanitizedInput = input.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+	if (sanitizedInput !== input.trim()) {
+		alert('Input contains invalid characters. Only alphanumeric characters are allowed.');
+		return false;
+	}
+	var isInputAccepted = dfaMachine.isInputAccepted(sanitizedInput);
 	return isInputAccepted;
 };
 
@@ -51,7 +91,9 @@ var createDfa = function() {
 
 		if (dfaMachine.finalStates.indexOf(state) != -1)
 			drawCircle(paper, x, y, 25);
-		paper.text(x, y, state.name);
+		// Sanitize state name before rendering
+		var safeStateName = sanitizeInput(state.name);
+		paper.text(x, y, safeStateName);
 	});
 
 	var text = "M" + (x - radius) + "," + y + " H" + (x - 120 + radius) + "," + (x - radius) + "";

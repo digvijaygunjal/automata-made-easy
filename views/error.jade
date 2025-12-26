@@ -1,6 +1,8 @@
-extends layout
+extends layout.jade
 
 block content
   h1= message
-  h2= error.status
-  pre #{error.stack}
+  if error.status
+    h2= error.status
+  // Error details are handled by app.js error handlers
+  // Stack traces are only shown in development mode server-side
